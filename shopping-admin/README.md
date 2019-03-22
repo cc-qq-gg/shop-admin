@@ -1,4 +1,4 @@
-# shop-admin
+# shopping-admin
 
 ## Project setup
 ```
