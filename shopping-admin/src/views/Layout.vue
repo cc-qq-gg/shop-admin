@@ -56,6 +56,11 @@ export default {
   name: 'Layout',
   components: {
   },
+  data () {
+    return {
+      yes: true
+    }
+  },
   methods: {
     handleLogout () {
       this.$confirm('are you', '确定退出吗？', {

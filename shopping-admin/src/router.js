@@ -37,17 +37,18 @@ const router = new Router({
   ]
 })
 // 路由token登录验证
-/* router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
   const { path } = to
-  console.log(to)
+  console.log(path)
   if (path !== '/login') {
     const token = window.localStorage.getItem('token')
-    if (token) {
-      next()
-    } else {
+    if (!token) {
       next('/login')
+    } else {
+      next()
     }
+  } else {
+    next()
   }
-  next()
-}) */
+})
 export default router

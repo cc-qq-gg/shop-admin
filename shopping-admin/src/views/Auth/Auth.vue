@@ -41,6 +41,7 @@
 
   </el-dialog>
      <el-table
+      v-loading="loading"
   :data="tableData"
   border
   style="width: 100%">
@@ -75,7 +76,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage4"
-      :page-sizes="[4, 40, 10, 40]"
+      :page-sizes="[4, 8, 16, 32]"
       :page-size="100"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
@@ -85,17 +86,21 @@
 </template>
 <script>
 import axios from 'axios'
+import { getUserList, addUser } from '@/api/user.js'
+
 export default {
   name: 'auth',
   created () {
-    this.loadUsersByPage(1)
+    // 如果参数值为undefined，测使用默认值
+    this.loadUsersByPage()
   },
   data () {
     return {
+      loading: true,
       pagesize: 4,
       searchText: '',
       total: 0,
-      currentPage4: 13,
+      currentPage4: 1,
       tableData: [{
         create_time: '',
         role_name: '',
@@ -140,72 +145,98 @@ export default {
     // 添加用户
     handleAddUser () {
       // 表单验证，会返回promise对象
-      this.$refs['form'].validate(valid => {
+      this.$refs['form'].validate(async valid => {
         if (!valid) {
           return
         }
-        axios({
-          method: 'post',
-          url: 'http://localhost:8888/api/private/v1/users',
-          data: this.addUserForm,
-          headers: {
-            Authorization: window.localStorage.getItem('token')
-          }
-        })
-          .then(res => {
-            const { meta } = res.data
-            const { status, msg } = meta
-            if (status === 201) {
-              this.dialogFormVisible = false
-              console.log(msg)
-              this.$message({
-                message: '添加成功',
-                type: 'success'
-              })
-              // 清空表单
-              this.$refs['form'].resetFields()
-              // 更新列表
-              this.loadUsersByPage(1)
-            } else if (status === 400) {
-              this.$message.error(msg)
-            }
+        const { data, meta: { status, msg } } = await addUser(this.addUserForm)
+        if (status === 201) {
+          this.dialogFormVisible = false
+          console.log(msg)
+          this.$message({
+            message: '添加成功',
+            type: 'success'
           })
+          // 清空表单
+          this.$refs['form'].resetFields()
+          // 更新列表
+          this.loadUsersByPage()
+        } else if (status === 400) {
+          this.$message.error(msg)
+        }
+        // axios({
+        //   method: 'post',
+        //   url: 'http://localhost:8888/api/private/v1/users',
+        //   data: this.addUserForm,
+        //   headers: {
+        //     Authorization: window.localStorage.getItem('token')
+        //   }
+        // })
+        //   .then(res => {
+        //     const { meta } = res.data
+        //     const { status, msg } = meta
+        //     if (status === 201) {
+        //       this.dialogFormVisible = false
+        //       console.log(msg)
+        //       this.$message({
+        //         message: '添加成功',
+        //         type: 'success'
+        //       })
+        //       // 清空表单
+        //       this.$refs['form'].resetFields()
+        //       // 更新列表
+        //       this.loadUsersByPage(1)
+        //     } else if (status === 400) {
+        //       this.$message.error(msg)
+        //     }
+        //   })
       })
     },
     // 查询
     handleSearch () {
-      this.loadUsersByPage(1)
+      this.loadUsersByPage(1, this.pagesize, this.searchText)
     },
+    // 每页显示项数
     handleSizeChange (val) {
       this.pagesize = val
       console.log(val)
-      this.loadUsersByPage(1)
+      this.loadUsersByPage(1, this.pagesize)
     },
+    // 页码变化
     handleCurrentChange (val) {
       console.log(val)
-      this.loadUsersByPage(val)
+      this.loadUsersByPage(val, this.pagesize)
     },
     // 加载成员
-    loadUsersByPage (num) {
-      axios.get('http://localhost:8888/api/private/v1/users', {
-      // 需要授权的API必须使用authorization字段，提供token令牌
-        headers: {
-          Authorization: window.localStorage.getItem('token')
-        },
-        params: {
-          pagenum: num, // 告诉服务器要获取第一页的数据
-          pagesize: this.pagesize, // 告诉服务器，每页5条
-          query: this.searchText// 查询方法
-          // 页数项对应的服务器公式为(P*n,n)
-        }
-      }).then(res => {
-        const { data: { data: { users } }, data: { data: { total } } } = res
-        this.tableData = users
-        this.total = total
-        if (total === 0) {
-          this.$message('没有相关用户！')
-        }
-      })
+    async loadUsersByPage (pagenum, pagesize, query) {
+      this.loading = true
+      let { data: { total }, data: { users } } = await getUserList({ pagesize, pagenum, query })
+      this.tableData = users
+      this.total = total
+      this.loading = false
+      if (total === 0) {
+        this.$message('没有相关用户！')
+      }
+      // axios.get('http://localhost:8888/api/private/v1/users', {
+      // // 需要授权的API必须使用authorization字段，提供token令牌
+      //   headers: {
+      //     Authorization: window.localStorage.getItem('token')
+      //   },
+      //   params: {
+      //     pagenum: num, // 告诉服务器要获取第一页的数据
+      //     pagesize: this.pagesize, // 告诉服务器，每页5条
+      //     query: this.searchText// 查询方法
+      //     // 页数项对应的服务器公式为(P*n,n)
+      //   }
+      // }).then(res => {
+      //   const { data: { data: { users } }, data: { data: { total } } } = res
+      //   this.tableData = users
+      //   this.total = total
+      //   this.loading = false
+      //   if (total === 0) {
+      //     this.$message('没有相关用户！')
+      //   }
+      // })
     }
   }
 }

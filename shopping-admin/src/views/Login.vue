@@ -19,8 +19,8 @@
 
 <script>
 
-import axios from 'axios'
-
+// import axios from 'axios'
+import { login } from '@/api/login.js'
 export default {
   name: 'Login',
   data () {
@@ -41,29 +41,47 @@ export default {
   },
   methods: {
     handleLogin () {
-      // 验证输入是否合法
-      this.$refs['form'].validate(valid => {
+      // asycn 和 await 不能跨级使用 ； 这类公共接口都要这么写，因为其返回值是promise对象
+      this.$refs['form'].validate(async valid => {
         if (!valid) {
           return
         }
-        axios.post('http://localhost:8888/api/private/v1/login', this.loginForm)
-          .then(res => {
-            const { data, meta } = res.data
-            const { status, msg } = meta
-            console.log(meta)
-            if (status === 200) {
-              console.log(data.token)
-              window.localStorage.setItem('token', data.token)
-              this.$router.replace('/')
-              this.$message({
-                message: '登陆成功',
-                type: 'success'
-              })
-            } else if (status === 400) {
-              this.$message.error(msg)
-            }
+        const { data, meta } = await login(this.loginForm)
+        const { msg, status } = meta
+        if (status === 200) {
+          window.localStorage.setItem('token', data.token)
+          this.$router.replace('/')
+          this.$message({
+            message: '登陆成功',
+            type: 'success'
           })
+        } else if (status === 400) {
+          this.$message.error(msg)
+        }
       })
+      // 验证输入是否合法
+      // this.$refs['form'].validate(valid => {
+      //   if (!valid) {
+      //     return
+      //   }
+      //   axios.post('http://localhost:8888/api/private/v1/login', this.loginForm)
+      //     .then(res => {
+      //       const { data, meta } = res.data
+      //       const { status, msg } = meta
+      //       console.log(meta)
+      //       if (status === 200) {
+      //         console.log(data.token)
+      //         window.localStorage.setItem('token', data.token)
+      //         this.$router.replace('/')
+      //         this.$message({
+      //           message: '登陆成功',
+      //           type: 'success'
+      //         })
+      //       } else if (status === 400) {
+      //         this.$message.error(msg)
+      //       }
+      //     })
+      // })
     }
   },
   props: {
