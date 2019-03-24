@@ -1,15 +1,30 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+// import Home from './views/Home.vue'
+import Login from './views/Login.vue'
+import Layout from './views/Layout.vue'
+import About from './views/About'
+import Auth from './views/Auth/Auth'
+import Role from './views/Auth/Role'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
       path: '/',
-      name: 'home',
-      component: Home
+      name: 'Layout',
+      component: Layout,
+      children: [
+        { path: '/ab', component: About },
+        { path: '/auth', component: Auth },
+        { path: '/role', component: Role }
+      ]
     },
     {
       path: '/about',
@@ -21,3 +36,18 @@ export default new Router({
     }
   ]
 })
+// 路由token登录验证
+/* router.beforeEach((to, from, next) => {
+  const { path } = to
+  console.log(to)
+  if (path !== '/login') {
+    const token = window.localStorage.getItem('token')
+    if (token) {
+      next()
+    } else {
+      next('/login')
+    }
+  }
+  next()
+}) */
+export default router

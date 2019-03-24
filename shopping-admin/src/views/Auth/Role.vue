@@ -1,9 +1,10 @@
 <template>
-<div>hahah</div>
+  <div>role</div>
 </template>
 <script>
 export default {
-  name: 'About'
+  name: 'role'
 }
 </script>
-<style scoped></style>
+
+<style></style>
