@@ -1,5 +1,6 @@
 import axios from 'axios'
 import router from '@/router'
+import { getToken } from './token.js'
 // 配置路由
 // 好处就是我们可以针对不同 url 的接口创建多个 axios 实例
 const http = axios.create({
@@ -14,7 +15,7 @@ http.interceptors.request.use(function (config) {
   if (config.url !== '/login') {
     // 非登录页按要求要获取Authorization验证
     // console.log(config)
-    config.headers.Authorization = window.localStorage.getItem('token')
+    config.headers.Authorization = getToken()
   } // Do something before request is sent
   return config // 请求通过的规则，如果不 return config，则请求不会发出去
 }, function (error) {
@@ -26,7 +27,8 @@ http.interceptors.request.use(function (config) {
  */
 http.interceptors.response.use(function (response) {
   // Do something with response data
-  if (response.data.meta.staus === 401) {
+  // 验证token是否合法的状态码
+  if (response.data.meta.status === 401) {
     // 跳转到登录页
     // 组件的 this.$router 就是 router/index.js 中 new VueRouter 实例
     router.replace('/login')

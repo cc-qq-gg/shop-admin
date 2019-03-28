@@ -21,6 +21,7 @@
 
 // import axios from 'axios'
 import { login } from '@/api/login.js'
+import * as User from '@/utils/token.js'
 export default {
   name: 'Login',
   data () {
@@ -49,7 +50,7 @@ export default {
         const { data, meta } = await login(this.loginForm)
         const { msg, status } = meta
         if (status === 200) {
-          window.localStorage.setItem('token', data.token)
+          User.setToken(data.token)
           this.$router.replace('/')
           this.$message({
             message: '登陆成功',

@@ -3,12 +3,11 @@ import Router from 'vue-router'
 // import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import Layout from './views/Layout.vue'
-import About from './views/About'
 import Auth from './views/Auth/Auth'
-import Role from './views/Auth/Role'
+import Right from './views/Right/right'
+import Goods from './views/Goods/good'
 
 Vue.use(Router)
-
 const router = new Router({
   routes: [
     {
@@ -21,19 +20,23 @@ const router = new Router({
       name: 'Layout',
       component: Layout,
       children: [
-        { path: '/ab', component: About },
-        { path: '/auth', component: Auth },
-        { path: '/role', component: Role }
+        { path: '/users', component: Auth },
+        { path: '/rights', component: Right },
+        { path: '/Goods', component: Goods },
+        {
+          path: '/roles',
+          component: () => import('./views/Roles/role')
+        }
       ]
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
     }
+    // {
+    // path: '/about',
+    // name: 'about',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    // component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+    // }
   ]
 })
 // 路由token登录验证

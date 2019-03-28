@@ -11,34 +11,32 @@
   <el-container class="el-container-side">
     <el-aside width="200px" height="100%" style="background-color: #545c64">
     <el-menu :default-openeds="['1', '3']"
-    background-color="#545c64"
+      background-color="#545c64"
      text-color="#fff"
       active-text-color="#ffd04b"
-      router=true>
-      <el-submenu index="1">
-        <template slot="title"><i class="el-icon-location"></i>用户管理</template>
-          <el-menu-item index="/auth">用户列表</el-menu-item>
-      </el-submenu>
-      <el-submenu index="2">
-        <template slot="title"><i class="el-icon-location"></i>权限管理</template>
-          <el-menu-item index="2-1">选项1</el-menu-item>
-      </el-submenu>
-      <el-submenu index="3">
-        <template slot="title"><i class="el-icon-location"></i>商品管理</template>
-          <el-menu-item index="3-1">选项1</el-menu-item>
-      </el-submenu>
-      <el-submenu index="4">
-        <template slot="title"><i class="el-icon-location"></i>订单管理</template>
-          <el-menu-item index="4-1">选项1</el-menu-item>
-      </el-submenu>
-      <el-submenu index="5">
-        <template slot="title"><i class="el-icon-location"></i>数据管理</template>
-          <el-menu-item index="5-1">选项1</el-menu-item>
+      :router="true">
+      <el-submenu :index="first.id.toString()"
+      v-for='first in menuList' :key='first.id'>
+
+        <template slot="title"><i class="el-icon-location"></i>
+        <span>{{first.authName}}</span>
+        </template>
+
+          <el-menu-item :index="`/${second.path}`"
+          v-for='second in first.children'
+          :key="second.id"
+          >{{second.authName}}</el-menu-item>
       </el-submenu>
     </el-menu>
   </el-aside>
     <el-container class="el-container-main">
       <el-main>
+        <el-breadcrumb separator="/" class="navroute">
+  <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+  <el-breadcrumb-item><a href="/">活动管理</a></el-breadcrumb-item>
+  <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+  <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+</el-breadcrumb>
         <router-view/>
       </el-main>
       <!-- <el-footer>Footer</el-footer> -->
@@ -51,17 +49,28 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-
+import { getMenuList } from '@/api/right'
 export default {
   name: 'Layout',
   components: {
   },
+  created () {
+    this.loadMenuList()
+  },
   data () {
     return {
-      yes: true
+      yes: true,
+      menuList: []
     }
   },
   methods: {
+    async loadMenuList () {
+      const { data, meta } = await getMenuList()
+      if (meta.status === 200) {
+        this.menuList = data
+      }
+      console.log('data', data)
+    },
     handleLogout () {
       this.$confirm('are you', '确定退出吗？', {
         confirmButtonText: '确定',
@@ -146,7 +155,7 @@ padding: 0;
     background-color: #E9EEF3;
     color: #333;
     text-align: center;
-    line-height: 160px;
+    /* line-height: 160px; */
   }
   .el-submenu__title {
     line-height: 40px;
