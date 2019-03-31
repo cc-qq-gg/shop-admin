@@ -1,8 +1,11 @@
 import request from '@/utils/request.js'
 // 所有商品数据
-export const getCategoriesList = () => request({
+export const getCategoriesList = (type = 3) => request({
   method: 'get',
-  url: '/categories'
+  url: '/categories',
+  params: {
+    type
+  }
 }).then(res => res.data)
 
 /**
@@ -11,7 +14,7 @@ export const getCategoriesList = () => request({
 export const getGoodsList = ({
   query = '',
   pagenum = 1,
-  pagesize = 20
+  pagesize = 10
 } = {}) => request({
   method: 'GET',
   url: '/goods',
@@ -19,5 +22,27 @@ export const getGoodsList = ({
     query,
     pagenum,
     pagesize
+  }
+}).then(res => res.data)
+// 添加商品列表
+export const addGoods = ({ goodsName, goodsCat, goodsPrice, goodsNumber, goodsWeight, attrs = [], pics = [] }) => request({
+  method: 'post',
+  url: 'goods',
+  data: {
+    goods_name: goodsName,
+    goods_cat: goodsCat,
+    goods_price: goodsPrice,
+    goods_number: goodsNumber,
+    goods_weight: goodsWeight,
+    attrs,
+    pics
+  }
+})
+// 获取参数列表
+export const getGoodsCategoryAttrs = (catId, sel = 'many') => request({
+  method: 'GET',
+  url: `/categories/${catId}/attributes`,
+  params: { // GET 参数
+    sel
   }
 }).then(res => res.data)

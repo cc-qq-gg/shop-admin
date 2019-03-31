@@ -6,6 +6,7 @@ import Layout from './views/Layout.vue'
 import Auth from './views/Auth/Auth'
 import Right from './views/Right/right'
 import Goods from './views/Goods/good'
+import GoodsAdd from './views/Goods/goodsAdd'
 
 Vue.use(Router)
 const router = new Router({
@@ -23,6 +24,7 @@ const router = new Router({
         { path: '/users', component: Auth },
         { path: '/rights', component: Right },
         { path: '/Goods', component: Goods },
+        { path: '/goodAdd', component: GoodsAdd },
         {
           path: '/roles',
           component: () => import('./views/Roles/role')

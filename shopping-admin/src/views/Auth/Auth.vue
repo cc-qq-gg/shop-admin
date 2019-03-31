@@ -252,7 +252,7 @@ export default {
     },
     // 查询
     handleSearch () {
-      this.loadUsersByPage(1, this.pagesize, this.searchText)
+      this.loadUsersByPage(1, this.pagesize)
     },
     // 每页显示项数
     handleSizeChange (val) {
@@ -267,14 +267,14 @@ export default {
       this.loadUsersByPage(val, this.pagesize)
     },
     // 加载成员
-    async loadUsersByPage (pagenum, pagesize, query) {
+    async loadUsersByPage (pagenum, pagesize) {
       console.log(arguments.length)
       if (arguments.length === 0) {
         pagesize = this.pagesize
         pagenum = this.pagenum
       }
       this.loading = true
-      let { data: { total }, data: { users } } = await getUserList({ pagesize, pagenum, query })
+      let { data: { total }, data: { users } } = await getUserList({ pagesize, pagenum, query: this.searchText })
       this.tableData = users
       console.log(users)
       this.total = total

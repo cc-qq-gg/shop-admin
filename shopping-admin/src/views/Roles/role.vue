@@ -33,13 +33,13 @@
           <!-- 二级 -->
           <el-col :span="20">
             <el-row class="second" v-for="second in first.children" :key="second.id">
-              <el-col :span="4">
+              <el-col :span="6">
                 <el-tag closable type="success">{{ second.authName }}</el-tag>
                 <i class="el-icon-arrow-right"></i>
               </el-col>
 
               <!-- 三级 -->
-              <el-col :span="20">
+              <el-col :span="18">
                 <el-tag class="third"
                  @close="handleRightDelete( scope.row, third.id)"
                  v-for="third in second.children"
@@ -165,13 +165,8 @@ export default {
 </script>
 
 <style scoped>
-.el-table {
-  margin-top: 10px
+.second {
+  padding: 0 0 5px 0;
 }
-.el-row .el-button{
-  margin-top: 10px
-}
-.el-table__expanded-cell>div {
-  padding: 5px 0
-}
+
 </style>
