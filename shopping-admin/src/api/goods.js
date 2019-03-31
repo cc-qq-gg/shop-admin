@@ -25,7 +25,7 @@ export const getGoodsList = ({
   }
 }).then(res => res.data)
 // 添加商品列表
-export const addGoods = ({ goodsName, goodsCat, goodsPrice, goodsNumber, goodsWeight, attrs = [], pics = [] }) => request({
+export const addGoods = ({ goodsName, goodsCat, goodsPrice, goodsNumber, goodsWeight, attrs = [], pics = [], goods_introduce = '' }) => request({
   method: 'post',
   url: 'goods',
   data: {
@@ -35,7 +35,8 @@ export const addGoods = ({ goodsName, goodsCat, goodsPrice, goodsNumber, goodsWe
     goods_number: goodsNumber,
     goods_weight: goodsWeight,
     attrs,
-    pics
+    pics,
+    goods_introduce
   }
 })
 // 获取参数列表
@@ -46,3 +47,14 @@ export const getGoodsCategoryAttrs = (catId, sel = 'many') => request({
     sel
   }
 }).then(res => res.data)
+
+//
+export const upload = files => {
+  const formData = new FormData()
+  formData.append('file', files[0])
+  return request({
+    method: 'POST',
+    url: '/upload',
+    data: formData
+  }).then(res => res.data)
+}

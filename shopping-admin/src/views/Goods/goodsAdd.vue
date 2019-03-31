@@ -88,7 +88,9 @@
           <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
         </el-upload>
       </el-tab-pane>
-      <el-tab-pane label="商品内容">商品内容</el-tab-pane>
+      <el-tab-pane label="商品内容">
+        <div ref="editor" style="text-align:left"></div>
+      </el-tab-pane>
     </el-tabs>
     <!-- /侧边导航标签页 -->
 
@@ -103,6 +105,7 @@
   </div>
 </template>
 <script>
+import E from 'wangeditor'
 import { getCategoriesList, addGoods, getGoodsCategoryAttrs } from '@/api/goods'
 import { getToken } from '@/utils/token.js'
 export default {
@@ -132,16 +135,27 @@ export default {
   created () {
     this.getGoodsCategories()
   },
+  mounted () {
+    // 初始化编辑器
+    const editor = new E(this.$refs.editor)
+    // 同步编辑器内容到vue组件中
+    editor.customConfig.onchange = (html) => {
+      console.log(html)
+      this.formData.goods_introduce = html
+    }
+    // 创建生成
+    editor.create()
+  },
   methods: {
     async handleSubmit () {
-      console.log('formData', this.formData)
       console.log('canshu', this.goodsCategoryAttrs)
       const {
         goods_name: goodsName,
         goods_cat: goodsCat,
         goods_price: goodsPrice,
         goods_number: goodsNumber,
-        goods_weight: goodsWeight
+        goods_weight: goodsWeight,
+        goods_introduce
       } = this.formData
       // 将商品参数里选中的属性集中在一个数组里，然后上传，many
       const categoryAttrs  = this.goodsCategoryAttrs
@@ -177,7 +191,8 @@ export default {
         goodsNumber,
         goodsWeight,
         attrs,
-        pics
+        pics,
+        goods_introduce
       })
       console.log('设置参数',data, meta)
       if (data.meta.status === 201) {
