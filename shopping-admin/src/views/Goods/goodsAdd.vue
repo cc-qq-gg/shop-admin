@@ -89,7 +89,7 @@
         </el-upload>
       </el-tab-pane>
       <el-tab-pane label="商品内容">
-        <div ref="editor" style="text-align:left"></div>
+        <Editor :content.sync='formData.goods_introduce '></Editor>
       </el-tab-pane>
     </el-tabs>
     <!-- /侧边导航标签页 -->
@@ -106,10 +106,14 @@
 </template>
 <script>
 import E from 'wangeditor'
-import { getCategoriesList, addGoods, getGoodsCategoryAttrs } from '@/api/goods'
+import { getCategoriesList, addGoods, getGoodsCategoryAttrs, upload } from '@/api/goods'
 import { getToken } from '@/utils/token.js'
+import Editor from '@/components/wangEditor'
 export default {
   name: 'GoodsAdd',
+  components: {
+    Editor
+  },
   data () {
     return {
        uploadHeaders: { // 上传组件自定义请求头
@@ -135,18 +139,11 @@ export default {
   created () {
     this.getGoodsCategories()
   },
-  mounted () {
-    // 初始化编辑器
-    const editor = new E(this.$refs.editor)
-    // 同步编辑器内容到vue组件中
-    editor.customConfig.onchange = (html) => {
-      console.log(html)
-      this.formData.goods_introduce = html
-    }
-    // 创建生成
-    editor.create()
-  },
   methods: {
+    handleEditorChange (html) {
+      console.log(html)
+      // this.formData.goods_introduce = html
+    },
     async handleSubmit () {
       console.log('canshu', this.goodsCategoryAttrs)
       const {
@@ -169,10 +166,10 @@ export default {
         .filter(attr => attr.attr_value.length > 0)
       //  商品参数，only
         const categoryParams = this.goodsCategoryParams.map(attr => {
-        return {
-          attr_id: attr.attr_id,
-          attr_value: attr.attr_vals
-        }
+                return {
+                  attr_id: attr.attr_id,
+                  attr_value: attr.attr_vals
+                }
       })
       // 处理商品的图片
       const pics = this.fileList.map(item => {

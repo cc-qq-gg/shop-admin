@@ -50,6 +50,7 @@ export const getGoodsCategoryAttrs = (catId, sel = 'many') => request({
 
 //
 export const upload = files => {
+  // form表单形式发送出去，设置file为键名
   const formData = new FormData()
   formData.append('file', files[0])
   return request({
