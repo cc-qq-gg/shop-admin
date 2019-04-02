@@ -48,7 +48,7 @@ export const getGoodsCategoryAttrs = (catId, sel = 'many') => request({
   }
 }).then(res => res.data)
 
-//
+// 富文本提交
 export const upload = files => {
   // form表单形式发送出去，设置file为键名
   const formData = new FormData()
@@ -57,5 +57,17 @@ export const upload = files => {
     method: 'POST',
     url: '/upload',
     data: formData
+  }).then(res => res.data)
+}
+// 添加商品分类
+export const addCategory = ({ cat_pid, cat_name, cat_level }) => {
+  return request({
+    method: 'POST',
+    url: 'categories',
+    data: {
+      cat_pid,
+      cat_name,
+      cat_level
+    }
   }).then(res => res.data)
 }

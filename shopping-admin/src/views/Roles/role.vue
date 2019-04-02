@@ -1,4 +1,3 @@
-
 <template>
 <div>
   <el-row>
@@ -20,16 +19,16 @@
     border
     stripe
     style="width: 100%">
+    <!-- 2.7版本的table检测到children后会自动按tree方式渲染 -->
     <el-table-column type="expand">
       <!-- 列表扩展 -->
       <template slot-scope="scope">
-        <el-row class="first" v-for="first in scope.row.children" :key="first.id">
+        <el-row class="first" v-for="first in scope.row.childrens" :key="first.id">
           <!-- 一级 -->
           <el-col :span="4">
             <el-tag closable>{{ first.authName }}</el-tag>
             <i class="el-icon-arrow-right"></i>
           </el-col>
-
           <!-- 二级 -->
           <el-col :span="20">
             <el-row class="second" v-for="second in first.children" :key="second.id">
@@ -66,7 +65,7 @@
       prop="roleDesc"
       label="描述">
     </el-table-column>
-    <el-table-column label="操作">
+    <el-table-column label="操作" width='250'>
       <template slot-scope="scope">
         <el-button
           size="mini"
@@ -107,6 +106,9 @@ export default {
     editRoleRight
   },
   methods: {
+    key () {
+      return Math.random() * 10000
+    },
     handleRightDelete (row, rightId) {
       this.$confirm('确认删除吗？', '删除提示', {
         confirmButtonText: '确定',
@@ -156,8 +158,13 @@ export default {
     async loadList () {
       const { data, meta } = await getRoleList()
       if (meta.status === 200) {
+        data.forEach(item => {
+          item.childrens = item.children
+          // 更换键名===>>=====>>新建+删除
+          delete item.children
+        })
         this.tableData = data
-        console.log(data)
+        console.log('row-key needed', data)
       }
     }
   }

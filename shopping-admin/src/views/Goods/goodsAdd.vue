@@ -1,7 +1,7 @@
 <template>
   <div class="goods-add-wrap">
     <!-- 步骤条 -->
-    <el-steps finish-status="success">
+    <el-steps finish-status="success" :active='activeStep'>
       <el-step title="步骤 1"></el-step>
       <el-step title="步骤 2"></el-step>
       <el-step title="步骤 3"></el-step>
@@ -116,7 +116,8 @@ export default {
   },
   data () {
     return {
-       uploadHeaders: { // 上传组件自定义请求头
+      activeStep: 0,
+      uploadHeaders: { // 上传组件自定义请求头
         Authorization: getToken()
       },
       fileList: [], // 图片列表
@@ -208,6 +209,7 @@ export default {
       }
     },
     handleTabClick (currentTab) {
+      this.activeStep = Number.parseInt(currentTab.index)
       if (currentTab.label === '商品参数' || currentTab.label === '商品属性') {
         // 获取商品的分类id
         const { goods_cat } = this.formData

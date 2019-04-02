@@ -10,7 +10,11 @@
   </el-header>
   <el-container class="el-container-side">
     <el-aside width="200px" height="100%" style="background-color: #545c64">
-    <el-menu :default-openeds="['1', '3']"
+    <el-menu
+     @select='handleSelect'
+     @open='handleOpen'
+     unique-opened
+     :default-active="$route.path"
       background-color="#545c64"
      text-color="#fff"
       active-text-color="#ffd04b"
@@ -33,9 +37,8 @@
       <el-main>
         <el-breadcrumb separator="/" class="navroute">
   <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-  <el-breadcrumb-item><a href="/">活动管理</a></el-breadcrumb-item>
-  <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-  <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+
+  <el-breadcrumb-item v-for="(item, index) in breadNames" :key="index">{{item}}</el-breadcrumb-item>
 </el-breadcrumb>
         <router-view/>
       </el-main>
@@ -54,22 +57,51 @@ export default {
   name: 'Layout',
   components: {
   },
-  created () {
-    this.loadMenuList()
+  // 没加async时，初始化没有显示，逻辑正确=》那么必然没有获取到数据》列表初始化函数未完成面包屑就已经加载完了
+  // 所以让数据加载完在执行面包屑函数
+  async created () {
+    // 异步执行
+    await this.loadMenuList()
+    this.handleSelect(this.$route.path)
+    console.log('hah',this.$route.path)
   },
   data () {
     return {
       yes: true,
-      menuList: []
+      menuList: [],
+      breadNames: []
     }
   },
   methods: {
+    handleOpen (a,b) {
+        console.log(a, b)
+    },
+    handleMenuSelect (names) {
+      this.breadNames = names
+    },
+    handleSelect (index) {
+      console.log('init index', index)
+      console.log('breadNames', this.breadNames)
+      console.log('menuList', this.menuList)
+      const secondPath = index.substr(1)
+      // 根据二级路径找到一级
+      this.menuList.forEach(first => {
+        // find 会遍历数据，将符合 second.path === secondPath 条件的元素返回
+        const second = first.children.find(second => {
+          return second.path === secondPath
+        })
+        if (second) { // 如果找到 second
+          // console.log(first.authName, second.authName)
+          // 重新赋值breadNames
+          this.handleMenuSelect([first.authName, second.authName])
+        }
+      })
+    },
     async loadMenuList () {
       const { data, meta } = await getMenuList()
       if (meta.status === 200) {
         this.menuList = data
       }
-      console.log('data', data)
     },
     handleLogout () {
       this.$confirm('are you', '确定退出吗？', {

@@ -7,6 +7,9 @@ import Auth from './views/Auth/Auth'
 import Right from './views/Right/right'
 import Goods from './views/Goods/good'
 import GoodsAdd from './views/Goods/goodsAdd'
+import GoodCategory from './views/Goods/goodCategory'
+import EchartsDemo from '@/views/EchartDemo'
+import OrderList from '@/views/Orders'
 
 Vue.use(Router)
 const router = new Router({
@@ -25,6 +28,9 @@ const router = new Router({
         { path: '/rights', component: Right },
         { path: '/Goods', component: Goods },
         { path: '/goodAdd', component: GoodsAdd },
+        { path: '/categories', component: GoodCategory },
+        { path: '/echart', component: EchartsDemo },
+        { path: '/orders', component: OrderList },
         {
           path: '/roles',
           component: () => import('./views/Roles/role')
